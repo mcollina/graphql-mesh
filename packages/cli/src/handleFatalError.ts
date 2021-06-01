@@ -1,7 +1,7 @@
-import { logger } from './logger';
+import { Logger } from '@graphql-mesh/types';
 import { spinner } from './spinner';
 
-export function handleFatalError(e: Error): any {
+export function handleFatalError(e: Error, logger: Logger): any {
   const errorText = `Unable to start GraphQL Mesh: ${e.message}`;
   if (spinner.isSpinning) {
     spinner.fail(errorText);

@@ -1,5 +1,16 @@
 /* eslint-disable no-unused-expressions */
-import { GraphQLSchema, DocumentNode, GraphQLError, subscribe, ExecutionArgs } from 'graphql';
+import {
+  GraphQLSchema,
+  DocumentNode,
+  GraphQLError,
+  subscribe,
+  ExecutionArgs,
+  GraphQLResolveInfo,
+  OperationTypeNode,
+  GraphQLObjectType,
+  parse,
+  Kind,
+} from 'graphql';
 import { ExecuteMeshFn, GetMeshOptions, Requester, SubscribeMeshFn } from './types';
 import { MeshPubSub, KeyValueCache, RawSourceOutput, GraphQLOperation } from '@graphql-mesh/types';
 
@@ -15,6 +26,7 @@ import {
 } from '@graphql-mesh/utils';
 
 import { InMemoryLiveQueryStore } from '@n1ru4l/in-memory-live-query-store';
+import { createRequest, delegateRequest, delegateToSchema } from '@graphql-tools/delegate';
 
 export interface MeshInstance {
   execute: ExecuteMeshFn;
@@ -102,13 +114,15 @@ export async function getMesh(options: GetMeshOptions): Promise<MeshInstance> {
   });
 
   pubsub.subscribe('resolverDone', ({ result, resolverData }) => {
-    const path = `${resolverData.info.parentType.name}.${resolverData.info.fieldName}`;
-    if (liveQueryInvalidationFactoryMap.has(path)) {
-      const invalidationPathFactories = liveQueryInvalidationFactoryMap.get(path);
-      const invalidationPaths = invalidationPathFactories.map(invalidationPathFactory =>
-        invalidationPathFactory({ ...resolverData, result })
-      );
-      liveQueryStore.invalidate(invalidationPaths);
+    if (resolverData?.info?.parentType && resolverData?.info?.fieldName) {
+      const path = `${resolverData.info.parentType.name}.${resolverData.info.fieldName}`;
+      if (liveQueryInvalidationFactoryMap.has(path)) {
+        const invalidationPathFactories = liveQueryInvalidationFactoryMap.get(path);
+        const invalidationPaths = invalidationPathFactories.map(invalidationPathFactory =>
+          invalidationPathFactory({ ...resolverData, result })
+        );
+        liveQueryStore.invalidate(invalidationPaths);
+      }
     }
   });
 
@@ -122,6 +136,7 @@ export async function getMesh(options: GetMeshOptions): Promise<MeshInstance> {
       [MESH_CONTEXT_SYMBOL]: true,
     });
 
+    const sourceMap: Map<RawSourceOutput, GraphQLSchema> = unifiedSchema.extensions.sourceMap;
     await Promise.all(
       rawSources.map(async rawSource => {
         const contextBuilder = rawSource.contextBuilder;
@@ -133,11 +148,84 @@ export async function getMesh(options: GetMeshOptions): Promise<MeshInstance> {
           }
         }
 
+        const rawSourceContext: any = {
+          rawSource,
+          [MESH_API_CONTEXT_SYMBOL]: true,
+        };
+        const [, transformedSchema] = [...sourceMap.entries()].find(
+          ([subSchema, transformedSchema]) => subSchema.name === rawSource.name
+        );
+        const rootTypes: Record<OperationTypeNode, GraphQLObjectType> = {
+          query: transformedSchema.getQueryType(),
+          mutation: transformedSchema.getMutationType(),
+          subscription: transformedSchema.getSubscriptionType(),
+        };
+
+        for (const operationType in rootTypes) {
+          const rootType: GraphQLObjectType = rootTypes[operationType];
+          if (rootType) {
+            rawSourceContext[rootType.name] = {};
+            const rootTypeFieldMap = rootType.getFields();
+            for (const fieldName in rootTypeFieldMap) {
+              const rootTypeField = rootTypeFieldMap[fieldName];
+              rawSourceContext[rootType.name][fieldName] = ({
+                root,
+                args,
+                context: givenContext = context,
+                info,
+                selectionSet: selectionSetString,
+              }: {
+                root: any;
+                args: any;
+                context: any;
+                info: GraphQLResolveInfo;
+                selectionSet: string;
+              }) => {
+                if (selectionSetString) {
+                  const document = parse(selectionSetString);
+                  const operationDefinition = document.definitions[0];
+                  if (operationDefinition.kind !== Kind.OPERATION_DEFINITION) {
+                    throw new Error(`selectionSet is not valid given: ${selectionSetString}`);
+                  }
+                  const selectionSet = operationDefinition.selectionSet;
+                  const request = createRequest({
+                    targetFieldName: fieldName,
+                    targetOperation: operationType as OperationTypeNode,
+                    selectionSet,
+                  });
+                  return delegateRequest({
+                    request,
+                    schema: rawSource,
+                    rootValue: root,
+                    operation: operationType as OperationTypeNode,
+                    fieldName,
+                    args,
+                    returnType: rootTypeField.type,
+                    context: givenContext,
+                    transformedSchema,
+                    skipValidation: true,
+                  });
+                } else if (info) {
+                  return delegateToSchema({
+                    schema: rawSource,
+                    rootValue: root,
+                    args,
+                    context: givenContext,
+                    info,
+                    operation: operationType as OperationTypeNode,
+                    fieldName,
+                    transformedSchema,
+                    skipValidation: true,
+                  });
+                }
+                throw new Error(`You should provide info or selectionSet.`);
+              };
+            }
+          }
+        }
+
         Object.assign(context, {
-          [rawSource.name]: {
-            rawSource,
-            [MESH_API_CONTEXT_SYMBOL]: true,
-          },
+          [rawSource.name]: rawSourceContext,
         });
       })
     );
@@ -198,7 +286,7 @@ export async function getMesh(options: GetMeshOptions): Promise<MeshInstance> {
       operationName
     );
 
-    if ('data' in executionResult) {
+    if ('data' in executionResult || 'errors' in executionResult) {
       if (executionResult.data && !executionResult.errors) {
         return executionResult.data as Result;
       } else {

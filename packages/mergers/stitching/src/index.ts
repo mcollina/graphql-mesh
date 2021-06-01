@@ -4,6 +4,7 @@ import { wrapSchema } from '@graphql-tools/wrap';
 import { mergeSingleSchema } from './mergeSingleSchema';
 import { groupTransforms, applySchemaTransforms, meshDefaultCreateProxyingResolver } from '@graphql-mesh/utils';
 import { StitchingInfo } from '@graphql-tools/delegate';
+import { stitchingDirectives } from '@graphql-tools/stitching-directives';
 
 const mergeUsingStitching: MergerFn = async function (options) {
   if (options.rawSources.length === 1) {
@@ -19,6 +20,7 @@ const mergeUsingStitching: MergerFn = async function (options) {
       }
     });
   */
+  const defaultStitchingDirectives = stitchingDirectives();
   let unifiedSchema = stitchSchemas({
     subschemas: rawSources.map(rawSource => ({
       createProxyingResolver: meshDefaultCreateProxyingResolver,
@@ -26,10 +28,11 @@ const mergeUsingStitching: MergerFn = async function (options) {
     })),
     typeDefs,
     resolvers,
+    subschemaConfigTransforms: [defaultStitchingDirectives.stitchingDirectivesTransformer],
   });
   unifiedSchema.extensions = unifiedSchema.extensions || {};
-  Object.defineProperty(unifiedSchema.extensions, 'sourceMap', {
-    get: () => {
+  Object.assign(unifiedSchema.extensions, {
+    get sourceMap() {
       const stitchingInfo: StitchingInfo = unifiedSchema.extensions.stitchingInfo;
       const entries = stitchingInfo.subschemaMap.entries();
       return new Map(

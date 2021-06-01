@@ -1,7 +1,7 @@
 import { GraphQLSchema, GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
 import { MeshTransform, YamlConfig, MeshTransformOptions } from '@graphql-mesh/types';
 import { addMocksToSchema, createMockStore, IMocks } from '@graphql-tools/mock';
-import * as faker from 'faker';
+import faker from 'faker';
 import {
   getInterpolatedStringFactory,
   loadFromModuleExportExpression,

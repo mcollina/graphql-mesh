@@ -13,7 +13,7 @@ import { loadFileDescriptorSetFromObject } from '@grpc/proto-loader';
 import { camelCase } from 'camel-case';
 import { SchemaComposer } from 'graphql-compose';
 import { GraphQLBigInt, GraphQLByte, GraphQLUnsignedInt } from 'graphql-scalars';
-import { get } from 'lodash';
+import _ from 'lodash';
 import { pascalCase } from 'pascal-case';
 import { AnyNestedObject, INamespace, IParseOptions, Message, Root, RootConstructor } from 'protobufjs';
 import { promisify } from 'util';
@@ -31,6 +31,7 @@ import {
 } from './utils';
 import { specifiedDirectives } from 'graphql';
 import { join, isAbsolute } from 'path';
+import { PredefinedProxyOptions, StoreProxy } from '@graphql-mesh/store';
 
 // We have to use an ol' fashioned require here :(
 // Needed for descriptor.FileDescriptorSet
@@ -42,37 +43,29 @@ interface LoadOptions extends IParseOptions {
 
 type DecodedDescriptorSet = Message<IFileDescriptorSet> & IFileDescriptorSet;
 
-interface GrpcHandlerIntrospectionCache {
+type RootAndDescriptorJson = {
   rootJson: INamespace;
   descriptorSetJson: any;
-}
+};
 
 export default class GrpcHandler implements MeshHandler {
   private config: YamlConfig.GrpcHandler;
   private baseDir: string;
   private cache: KeyValueCache;
-  private introspectionCache: GrpcHandlerIntrospectionCache;
+  private rootAndDescriptorSetJson: StoreProxy<RootAndDescriptorJson>;
 
-  constructor({
-    config,
-    baseDir,
-    cache,
-    introspectionCache,
-  }: GetMeshSourceOptions<YamlConfig.GrpcHandler, GrpcHandlerIntrospectionCache>) {
+  constructor({ config, baseDir, cache, store }: GetMeshSourceOptions<YamlConfig.GrpcHandler>) {
     if (!config) {
       throw new Error('Config not specified!');
     }
     this.config = config;
     this.baseDir = baseDir;
     this.cache = cache;
-    this.introspectionCache = introspectionCache || {
-      rootJson: null,
-      descriptorSetJson: null,
-    };
+    this.rootAndDescriptorSetJson = store.proxy('rootAndDescriptor.json', PredefinedProxyOptions.JsonWithoutValidation);
   }
 
-  async getCachedRootJson(creds: ChannelCredentials) {
-    if (!this.introspectionCache.rootJson || !this.introspectionCache.descriptorSetJson) {
+  getCachedRootJson(creds: ChannelCredentials) {
+    return this.rootAndDescriptorSetJson.getWithSet(async () => {
       const root = new Root();
       if (this.config.useReflection) {
         const grpcReflectionServer = this.config.endpoint;
@@ -135,13 +128,13 @@ export default class GrpcHandler implements MeshHandler {
         const protoDefinition = await root.load(fileName, options);
         protoDefinition.resolveAll();
       }
-      this.introspectionCache.rootJson = root.toJSON({
-        keepComments: true,
-      });
-      this.introspectionCache.descriptorSetJson = root.toDescriptor('proto3').toJSON();
-    }
-
-    return this.introspectionCache;
+      return {
+        rootJson: root.toJSON({
+          keepComments: true,
+        }),
+        descriptorSetJson: root.toDescriptor('proto3').toJSON(),
+      };
+    });
   }
 
   async getMeshSource() {
@@ -227,7 +220,7 @@ export default class GrpcHandler implements MeshHandler {
         }
       } else if ('methods' in nested) {
         const objPath = currentPath ? currentPath + '.' + name : name;
-        const ServiceClient = get(grpcObject, objPath);
+        const ServiceClient = _.get(grpcObject, objPath);
         if (typeof ServiceClient !== 'function') {
           throw new Error(`Object at path ${objPath} is not a Service constructor`);
         }

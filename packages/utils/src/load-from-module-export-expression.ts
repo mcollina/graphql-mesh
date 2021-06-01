@@ -33,7 +33,7 @@ async function tryImport(modulePath: string, cwd: string) {
         const absoluteModulePath = isAbsolute(modulePath) ? modulePath : join(cwd || process.cwd(), modulePath);
         return await import(absoluteModulePath);
       } catch (e2) {
-        if (e2.message.includes('Cannot find module')) {
+        if (e2.message.startsWith('Cannot find')) {
           throw e1;
         } else {
           throw e2;
@@ -72,7 +72,7 @@ function tryImportSync(modulePath: string, cwd: string) {
         const absoluteModulePath = isAbsolute(modulePath) ? modulePath : join(cwd || process.cwd(), modulePath);
         return require(absoluteModulePath);
       } catch (e2) {
-        if (e2.message.includes('Cannot find module')) {
+        if (e2.message.startsWith('Cannot find')) {
           throw e1;
         } else {
           throw e2;
