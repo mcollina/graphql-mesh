@@ -1,18 +1,27 @@
 {
   me {
+    id
     name
     reviews {
-      body
-      product {
-        name
-      }
       author {
         id
         username
+        name
         reviews {
           body
         }
       }
+      body
+      id
+      product {
+        inStock
+        name
+        price
+        shippingEstimate
+        upc
+        weight
+      }
     }
+    username
   }
 }

@@ -320,14 +320,6 @@
           },
           "additionalItems": false,
           "description": "List of transforms to apply to the current API source, before unifying it with the rest of the sources"
-        },
-        "typeMerging": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MergedTypeConfig"
-          },
-          "additionalItems": false,
-          "description": "Type Merging Configuration\nhttps://www.graphql-tools.com/docs/stitch-type-merging"
         }
       },
       "required": ["name", "handler"]
@@ -439,6 +431,14 @@
         "snapshot": {
           "$ref": "#/definitions/SnapshotTransformConfig",
           "description": "Configuration for Snapshot extension"
+        },
+        "typeMerging": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MergedTypeConfig"
+          },
+          "additionalItems": false,
+          "description": "Type Merging Configuration\nhttps://www.graphql-tools.com/docs/stitch-type-merging"
         }
       }
     },
@@ -597,110 +597,6 @@
         }
       },
       "required": ["field", "invalidate"]
-    },
-    "MergedTypeConfig": {
-      "additionalProperties": false,
-      "type": "object",
-      "title": "MergedTypeConfig",
-      "properties": {
-        "typeName": {
-          "type": "string"
-        },
-        "fieldName": {
-          "type": "string"
-        },
-        "args": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": true
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "additionalItems": true
-            }
-          ]
-        },
-        "argsFromKeys": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": true
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "additionalItems": true
-            }
-          ]
-        },
-        "selectionSet": {
-          "type": "string"
-        },
-        "fields": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/MergedFieldConfig"
-          },
-          "additionalItems": false
-        },
-        "key": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": true
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "additionalItems": true
-            }
-          ]
-        },
-        "canonical": {
-          "type": "boolean"
-        },
-        "resolve": {
-          "description": "Any of: String, AdditionalStitchingResolverObject, AdditionalSubscriptionObject",
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "#/definitions/AdditionalStitchingResolverObject"
-            },
-            {
-              "$ref": "#/definitions/AdditionalSubscriptionObject"
-            }
-          ]
-        }
-      }
-    },
-    "MergedFieldConfig": {
-      "additionalProperties": false,
-      "type": "object",
-      "title": "MergedFieldConfig",
-      "properties": {
-        "fieldName": {
-          "type": "string"
-        },
-        "selectionSet": {
-          "type": "string"
-        },
-        "computed": {
-          "type": "boolean"
-        },
-        "canonical": {
-          "type": "boolean"
-        }
-      }
     },
     "GraphQLHandler": {
       "additionalProperties": false,
@@ -2073,7 +1969,7 @@
         "sourceSelectionSet": {
           "type": "string"
         },
-        "args": {
+        "sourceArgs": {
           "type": "object",
           "properties": {}
         },
@@ -2487,6 +2383,110 @@
         "infile": {
           "type": "string",
           "description": "Path to the SQL Dump file if you want to build a in-memory database"
+        }
+      }
+    },
+    "MergedTypeConfig": {
+      "additionalProperties": false,
+      "type": "object",
+      "title": "MergedTypeConfig",
+      "properties": {
+        "typeName": {
+          "type": "string"
+        },
+        "fieldName": {
+          "type": "string"
+        },
+        "args": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": true
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "additionalItems": true
+            }
+          ]
+        },
+        "argsFromKeys": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": true
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "additionalItems": true
+            }
+          ]
+        },
+        "selectionSet": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MergedFieldConfig"
+          },
+          "additionalItems": false
+        },
+        "key": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": true
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "additionalItems": true
+            }
+          ]
+        },
+        "canonical": {
+          "type": "boolean"
+        },
+        "resolve": {
+          "description": "Any of: String, AdditionalStitchingResolverObject, AdditionalSubscriptionObject",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/AdditionalStitchingResolverObject"
+            },
+            {
+              "$ref": "#/definitions/AdditionalSubscriptionObject"
+            }
+          ]
+        }
+      }
+    },
+    "MergedFieldConfig": {
+      "additionalProperties": false,
+      "type": "object",
+      "title": "MergedFieldConfig",
+      "properties": {
+        "fieldName": {
+          "type": "string"
+        },
+        "selectionSet": {
+          "type": "string"
+        },
+        "computed": {
+          "type": "boolean"
+        },
+        "canonical": {
+          "type": "boolean"
         }
       }
     }

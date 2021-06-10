@@ -25,7 +25,7 @@ type ResolveReferenceObject {
   sourceTypeName: String!
   sourceFieldName: String!
   sourceSelectionSet: String
-  args: JSON
+  sourceArgs: JSON
   returnData: String
 }
 

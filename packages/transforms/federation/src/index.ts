@@ -9,7 +9,7 @@ import {
   printSchema,
 } from 'graphql';
 import { MeshTransform, YamlConfig, MeshTransformOptions } from '@graphql-mesh/types';
-import { loadFromModuleExportExpressionSync } from '@graphql-mesh/utils';
+import { loadFromModuleExportExpression } from '@graphql-mesh/utils';
 import { FederationConfig, FederationFieldsConfig } from 'graphql-transform-federation';
 import { addFederationAnnotations } from 'graphql-transform-federation/dist/transform-sdl';
 import _ from 'lodash';
@@ -58,17 +58,20 @@ export default class FederationTransform implements MeshTransform {
         if (type.config?.resolveReference) {
           const resolveReferenceConfig = type.config.resolveReference;
           if (typeof resolveReferenceConfig === 'string') {
-            resolveReference = loadFromModuleExportExpressionSync(resolveReferenceConfig, { cwd: this.baseDir });
+            resolveReference = (...args: any[]) =>
+              loadFromModuleExportExpression<any>(resolveReferenceConfig, { cwd: this.baseDir }).then(fn =>
+                fn(...args)
+              );
           } else if (typeof resolveReferenceConfig === 'function') {
             resolveReference = type.config.resolveReference;
           } else {
-            const { sourceName, sourceTypeName, sourceFieldName, sourceSelectionSet, args, returnData } =
+            const { sourceName, sourceTypeName, sourceFieldName, sourceSelectionSet, sourceArgs, returnData } =
               resolveReferenceConfig;
             resolveReference = async (root: any, context: any, info: any) => {
               const resolverData = { root, context, info };
               const methodArgs: any = {};
-              for (const argPath in args) {
-                _.set(methodArgs, argPath, _.get(resolverData, resolveReferenceConfig.args[argPath]));
+              for (const argPath in sourceArgs) {
+                _.set(methodArgs, argPath, _.get(resolverData, resolveReferenceConfig.sourceArgs[argPath]));
               }
               const result = await context[sourceName][sourceTypeName][sourceFieldName]({
                 root,
@@ -146,6 +149,11 @@ export default class FederationTransform implements MeshTransform {
         }
         type.resolveReference = currentFederationConfig.resolveReference;
       }
+    });
+
+    schemaWithUnionType.extensions = schemaWithUnionType.extensions || {};
+    Object.assign(schemaWithUnionType.extensions, {
+      apolloServiceSdl: schemaWithFederationDirectives,
     });
 
     return schemaWithUnionType;

@@ -166,11 +166,6 @@ export interface Source {
    * List of transforms to apply to the current API source, before unifying it with the rest of the sources
    */
   transforms?: Transform[];
-  /**
-   * Type Merging Configuration
-   * https://www.graphql-tools.com/docs/stitch-type-merging
-   */
-  typeMerging?: MergedTypeConfig[];
 }
 /**
  * Point to the handler you wish to use, it can either be a predefined handler, or a custom
@@ -899,6 +894,11 @@ export interface Transform {
    */
   resolversComposition?: ResolversCompositionTransform | any;
   snapshot?: SnapshotTransformConfig;
+  /**
+   * Type Merging Configuration
+   * https://www.graphql-tools.com/docs/stitch-type-merging
+   */
+  typeMerging?: MergedTypeConfig[];
   [k: string]: any;
 }
 export interface CacheTransformConfig {
@@ -999,7 +999,7 @@ export interface ResolveReferenceObject {
   sourceTypeName: string;
   sourceFieldName: string;
   sourceSelectionSet?: string;
-  args?: {
+  sourceArgs?: {
     [k: string]: any;
   };
   returnData?: string;

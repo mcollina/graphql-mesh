@@ -7,16 +7,7 @@ import {
   KeyValueCache,
 } from '@graphql-mesh/types';
 import { UrlLoader } from '@graphql-tools/url-loader';
-import {
-  GraphQLSchema,
-  buildSchema,
-  parse,
-  execute,
-  GraphQLResolveInfo,
-  DocumentNode,
-  Kind,
-  buildASTSchema,
-} from 'graphql';
+import { GraphQLSchema, buildSchema, parse, DocumentNode, Kind, buildASTSchema } from 'graphql';
 import { introspectSchema } from '@graphql-tools/wrap';
 import {
   getInterpolatedHeadersFactory,
@@ -172,17 +163,14 @@ export default class GraphQLHandler implements MeshHandler {
           sdl: apolloServiceSdl,
         };
       };
+      nonExecutableSchema.extensions = nonExecutableSchema.extensions || {};
+      Object.assign(nonExecutableSchema.extensions, {
+        apolloServiceSdl,
+      });
     }
-    const isSdlQuery = (info: GraphQLResolveInfo) =>
-      info.fieldName === '_service' &&
-      info.fieldNodes[0].selectionSet.selections[0].kind === 'Field' &&
-      info.fieldNodes[0].selectionSet.selections[0].name.value === 'sdl';
     return {
       schema: nonExecutableSchema,
       executor: async params => {
-        if (params.info && isSdlQuery(params.info)) {
-          return execute(nonExecutableSchema, params.document);
-        }
         const { executor } = await getExecutorAndSubscriberForParams(params, operationHeadersFactory, endpointFactory);
         return executor(params) as any;
       },

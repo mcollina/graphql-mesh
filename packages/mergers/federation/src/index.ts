@@ -1,9 +1,10 @@
 import { MergerFn, RawSourceOutput } from '@graphql-mesh/types';
-import { GraphQLSchema, print, graphql, extendSchema } from 'graphql';
+import { GraphQLSchema, print, extendSchema, DocumentNode, parse, graphql } from 'graphql';
 import { wrapSchema } from '@graphql-tools/wrap';
-import { ApolloGateway, ServiceEndpointDefinition } from '@apollo/gateway';
+import { ApolloGateway } from '@apollo/gateway';
 import { addResolversToSchema } from '@graphql-tools/schema';
 import { meshDefaultCreateProxyingResolver, hashObject } from '@graphql-mesh/utils';
+import { getDocumentNodeFromSchema } from '@graphql-tools/utils';
 
 const mergeUsingFederation: MergerFn = async function ({
   rawSources,
@@ -14,7 +15,7 @@ const mergeUsingFederation: MergerFn = async function ({
   transforms,
 }): Promise<GraphQLSchema> {
   const serviceMap = new Map<string, GraphQLSchema>();
-  const serviceList: ServiceEndpointDefinition[] = [];
+  const localServiceList: { name: string; typeDefs: DocumentNode }[] = [];
   const sourceMap = new Map<RawSourceOutput, GraphQLSchema>();
   await Promise.all(
     rawSources.map(async rawSource => {
@@ -24,14 +25,16 @@ const mergeUsingFederation: MergerFn = async function ({
       });
       serviceMap.set(rawSource.name, transformedSchema);
       sourceMap.set(rawSource, transformedSchema);
-      serviceList.push({
+      localServiceList.push({
         name: rawSource.name,
-        url: 'http://localhost/' + rawSource.name,
+        typeDefs: transformedSchema.extensions?.apolloServiceSdl
+          ? parse(transformedSchema.extensions?.apolloServiceSdl)
+          : getDocumentNodeFromSchema(transformedSchema),
       });
     })
   );
   const gateway = new ApolloGateway({
-    serviceList,
+    localServiceList,
     buildService({ name }) {
       return {
         process({ request, context }) {

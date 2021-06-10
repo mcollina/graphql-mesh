@@ -181,6 +181,17 @@ export async function getMesh(options: GetMeshOptions): Promise<MeshInstance> {
                 info: GraphQLResolveInfo;
                 selectionSet: string;
               }) => {
+                const delegationOptions = {
+                  schema: rawSource,
+                  rootValue: root,
+                  operation: operationType as OperationTypeNode,
+                  fieldName,
+                  args,
+                  returnType: rootTypeField.type,
+                  context: givenContext,
+                  transformedSchema,
+                  skipValidation: true,
+                };
                 if (selectionSetString) {
                   const document = parse(selectionSetString);
                   const operationDefinition = document.definitions[0];
@@ -194,28 +205,13 @@ export async function getMesh(options: GetMeshOptions): Promise<MeshInstance> {
                     selectionSet,
                   });
                   return delegateRequest({
+                    ...delegationOptions,
                     request,
-                    schema: rawSource,
-                    rootValue: root,
-                    operation: operationType as OperationTypeNode,
-                    fieldName,
-                    args,
-                    returnType: rootTypeField.type,
-                    context: givenContext,
-                    transformedSchema,
-                    skipValidation: true,
                   });
                 } else if (info) {
                   return delegateToSchema({
-                    schema: rawSource,
-                    rootValue: root,
-                    args,
-                    context: givenContext,
+                    ...delegationOptions,
                     info,
-                    operation: operationType as OperationTypeNode,
-                    fieldName,
-                    transformedSchema,
-                    skipValidation: true,
                   });
                 }
                 throw new Error(`You should provide info or selectionSet.`);
