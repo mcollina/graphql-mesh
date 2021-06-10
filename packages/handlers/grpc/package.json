@@ -3,7 +3,8 @@
   "version": "0.14.9",
   "sideEffects": false,
   "main": "dist/index.js",
-  "module": "dist/index.mjs","typings": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.ts",
   "typescript": {
     "definition": "dist/index.d.ts"
   },
@@ -31,6 +32,7 @@
     "graphql-scalars": "1.10.0",
     "graphql-compose": "8.1.0",
     "grpc-reflection-js": "0.1.1",
+    "long": "4.0.0",
     "protobufjs": "6.11.2",
     "pascal-case": "3.1.2",
     "lodash": "4.17.21"

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 import './patchLongJs';
 import { GetMeshSourceOptions, KeyValueCache, MeshHandler, YamlConfig } from '@graphql-mesh/types';
 import { withCancel } from '@graphql-mesh/utils';
@@ -15,10 +16,12 @@ import { SchemaComposer } from 'graphql-compose';
 import { GraphQLBigInt, GraphQLByte, GraphQLUnsignedInt } from 'graphql-scalars';
 import _ from 'lodash';
 import { pascalCase } from 'pascal-case';
-import { AnyNestedObject, INamespace, IParseOptions, Message, Root, RootConstructor } from 'protobufjs';
+import { AnyNestedObject, INamespace, IParseOptions, Message, RootConstructor } from 'protobufjs';
+import protobufjs from 'protobufjs';
 import { promisify } from 'util';
 import grpcReflection from 'grpc-reflection-js';
 import { IFileDescriptorSet } from 'protobufjs/ext/descriptor';
+import descriptor from 'protobufjs/ext/descriptor/index.js';
 
 import {
   ClientMethod,
@@ -33,9 +36,7 @@ import { specifiedDirectives } from 'graphql';
 import { join, isAbsolute } from 'path';
 import { PredefinedProxyOptions, StoreProxy } from '@graphql-mesh/store';
 
-// We have to use an ol' fashioned require here :(
-// Needed for descriptor.FileDescriptorSet
-const descriptor = require('protobufjs/ext/descriptor');
+const { Root } = protobufjs;
 
 interface LoadOptions extends IParseOptions {
   includeDirs?: string[];
