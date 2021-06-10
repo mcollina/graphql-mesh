@@ -31,10 +31,5 @@
   "publishConfig": {
     "access": "public",
     "directory": "dist"
-  },
-  "buildOptions": {
-    "external": [
-      "./config-schema.json"
-    ]
   }
 }

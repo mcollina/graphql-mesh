@@ -1,7 +1,7 @@
 import { MergerFn, RawSourceOutput } from '@graphql-mesh/types';
-import { GraphQLSchema, print, extendSchema, DocumentNode, parse, graphql } from 'graphql';
+import { GraphQLSchema, print, extendSchema, DocumentNode, parse } from 'graphql';
 import { wrapSchema } from '@graphql-tools/wrap';
-import { ApolloGateway } from '@apollo/gateway';
+import { ApolloGateway, LocalGraphQLDataSource } from '@apollo/gateway';
 import { addResolversToSchema } from '@graphql-tools/schema';
 import { meshDefaultCreateProxyingResolver, hashObject } from '@graphql-mesh/utils';
 import { getDocumentNodeFromSchema } from '@graphql-tools/utils';
@@ -14,7 +14,7 @@ const mergeUsingFederation: MergerFn = async function ({
   resolvers,
   transforms,
 }): Promise<GraphQLSchema> {
-  const serviceMap = new Map<string, GraphQLSchema>();
+  const rawSourceMap = new Map<string, RawSourceOutput>();
   const localServiceList: { name: string; typeDefs: DocumentNode }[] = [];
   const sourceMap = new Map<RawSourceOutput, GraphQLSchema>();
   await Promise.all(
@@ -23,7 +23,7 @@ const mergeUsingFederation: MergerFn = async function ({
         createProxyingResolver: meshDefaultCreateProxyingResolver,
         ...rawSource,
       });
-      serviceMap.set(rawSource.name, transformedSchema);
+      rawSourceMap.set(rawSource.name, rawSource);
       sourceMap.set(rawSource, transformedSchema);
       localServiceList.push({
         name: rawSource.name,
@@ -36,25 +36,16 @@ const mergeUsingFederation: MergerFn = async function ({
   const gateway = new ApolloGateway({
     localServiceList,
     buildService({ name }) {
-      return {
-        process({ request, context }) {
-          const schema = serviceMap.get(name);
-          return graphql(
-            schema,
-            request.query,
-            null,
-            context.graphqlContext || context,
-            request.variables,
-            request.operationName
-          ) as any;
-        },
-      };
+      const rawSource = rawSourceMap.get(name);
+      const transformedSchema = sourceMap.get(rawSource);
+      return new LocalGraphQLDataSource(transformedSchema);
     },
   });
   const { schema, executor: gatewayExecutor } = await gateway.load();
   const schemaHash: any = hashObject({ schema });
   let remoteSchema: GraphQLSchema = schema;
   remoteSchema = wrapSchema({
+    createProxyingResolver: meshDefaultCreateProxyingResolver,
     schema: remoteSchema,
     executor: ({ document, info, variables, context }): any => {
       const documentStr = print(document);
@@ -79,7 +70,6 @@ const mergeUsingFederation: MergerFn = async function ({
         schemaHash,
       });
     },
-    createProxyingResolver: meshDefaultCreateProxyingResolver,
   });
   pubsub.subscribe('destroy', () => gateway.stop());
   typeDefs?.forEach(typeDef => {

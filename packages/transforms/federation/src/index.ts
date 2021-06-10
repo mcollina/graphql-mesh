@@ -11,9 +11,9 @@ import {
 import { MeshTransform, YamlConfig, MeshTransformOptions } from '@graphql-mesh/types';
 import { loadFromModuleExportExpression } from '@graphql-mesh/utils';
 import { FederationConfig, FederationFieldsConfig } from 'graphql-transform-federation';
-import { addFederationAnnotations } from 'graphql-transform-federation/dist/transform-sdl';
+import { addFederationAnnotations } from 'graphql-transform-federation/dist/transform-sdl.js';
 import _ from 'lodash';
-import { entitiesField, EntityType, serviceField } from '@apollo/federation/dist/types';
+import { entitiesField, EntityType, serviceField } from '@apollo/federation/dist/types.js';
 import { mapSchema, MapperKind } from '@graphql-tools/utils';
 
 import federationToStitchingSDL from 'federation-to-stitching-sdl';
