@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { GetMeshSourceOptions, MeshHandler, MeshSource, YamlConfig, MeshPubSub } from '@graphql-mesh/types';
-import { subscribe } from 'graphql';
-import { withPostGraphileContext, Plugin, WithPostGraphileContextOptions } from 'postgraphile';
+import { Plugin } from 'postgraphile';
 import { getPostGraphileBuilder } from 'postgraphile-core';
 import { Pool } from 'pg';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { loadFromModuleExportExpression, jitExecutorFactory, readJSON } from '@graphql-mesh/utils';
-import { ExecutionParams } from '@graphql-tools/delegate';
+import { loadFromModuleExportExpression, readJSON } from '@graphql-mesh/utils';
 import { PredefinedProxyOptions } from '@graphql-mesh/store';
 
 export default class PostGraphileHandler implements MeshHandler {
@@ -82,44 +80,13 @@ export default class PostGraphileHandler implements MeshHandler {
       await this.pgCache.set(cachedIntrospection);
     }
 
-    const jitExecutor = jitExecutorFactory(schema, this.name);
-
-    const withPostGraphileContextParams: Partial<WithPostGraphileContextOptions> = {
-      pgPool,
-    };
-
-    const executor: any = ({ document, variables, context: meshContext, info }: ExecutionParams) =>
-      withPostGraphileContext(withPostGraphileContextParams as any, async postgraphileContext =>
-        jitExecutor({
-          document,
-          variables,
-          context: {
-            ...meshContext,
-            ...postgraphileContext,
-          },
-          info,
-        })
-      );
-
-    const subscriber: any = ({ document, variables, context: meshContext }: ExecutionParams) =>
-      withPostGraphileContext(
-        withPostGraphileContextParams as any,
-        // Execute your GraphQL query in this function with the provided
-        // `context` object, which should NOT be used outside of this
-        // function.
-        postgraphileContext =>
-          subscribe({
-            schema, // The schema from `createPostGraphileSchema`
-            document,
-            contextValue: { ...postgraphileContext, ...meshContext }, // You can add more to context if you like
-            variableValues: variables,
-          }) as any
-      ) as any;
+    this.pubsub.subscribe('onExecutionDone', ({ contextValue }) => contextValue.pgClient.release());
 
     return {
       schema,
-      executor,
-      subscriber,
+      contextBuilder: async () => ({
+        pgClient: await pgPool.connect(),
+      }),
     };
   }
 }

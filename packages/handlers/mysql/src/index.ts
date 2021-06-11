@@ -17,8 +17,7 @@ import {
   GraphQLUnsignedFloat,
 } from 'graphql-scalars';
 import { specifiedDirectives } from 'graphql';
-import { loadFromModuleExportExpression, jitExecutorFactory } from '@graphql-mesh/utils';
-import { ExecutionParams } from '@graphql-tools/delegate';
+import { loadFromModuleExportExpression } from '@graphql-mesh/utils';
 import { MeshStore, PredefinedProxyOptions } from '@graphql-mesh/store';
 
 const SCALARS = {
@@ -86,14 +85,12 @@ type MysqlPromisifiedConnection = ThenArg<ReturnType<typeof MySQLHandler.prototy
 type MysqlContext = { mysqlConnection: MysqlPromisifiedConnection };
 
 export default class MySQLHandler implements MeshHandler {
-  private name: string;
   private config: YamlConfig.MySQLHandler;
   private baseDir: string;
   private pubsub: MeshPubSub;
   private store: MeshStore;
 
-  constructor({ name, config, baseDir, pubsub, store }: GetMeshSourceOptions<YamlConfig.MySQLHandler>) {
-    this.name = name;
+  constructor({ config, baseDir, pubsub, store }: GetMeshSourceOptions<YamlConfig.MySQLHandler>) {
     this.config = config;
     this.baseDir = baseDir;
     this.pubsub = pubsub;
@@ -462,16 +459,13 @@ export default class MySQLHandler implements MeshHandler {
 
     introspectionConnection.connection.release();
 
-    const jitExecutor = jitExecutorFactory(schema, this.name);
-    const executor: any = async ({ document, variables, context: meshContext, info }: ExecutionParams) => {
-      const mysqlConnection = await this.getPromisifiedConnection(pool);
-      const contextValue = { ...meshContext, mysqlConnection };
-      return jitExecutor({ document, variables, context: contextValue, info });
-    };
+    this.pubsub.subscribe('onExecutionDone', ({ contextValue }) => contextValue.mysqlConnection.connection.destroy());
 
     return {
       schema,
-      executor,
+      contextBuilder: async () => ({
+        mysqlConnection: await this.getPromisifiedConnection(pool),
+      }),
     };
   }
 }

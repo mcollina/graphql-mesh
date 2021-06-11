@@ -152,9 +152,7 @@ export async function getMesh(options: GetMeshOptions): Promise<MeshInstance> {
           rawSource,
           [MESH_API_CONTEXT_SYMBOL]: true,
         };
-        const [, transformedSchema] = [...sourceMap.entries()].find(
-          ([subSchema, transformedSchema]) => subSchema.name === rawSource.name
-        );
+        const [, transformedSchema] = [...sourceMap.entries()].find(([subSchema]) => subSchema.name === rawSource.name);
         const rootTypes: Record<OperationTypeNode, GraphQLObjectType> = {
           query: transformedSchema.getQueryType(),
           mutation: transformedSchema.getMutationType(),
@@ -238,14 +236,23 @@ export async function getMesh(options: GetMeshOptions): Promise<MeshInstance> {
   ) {
     const contextValue = context && context[MESH_CONTEXT_SYMBOL] ? context : await buildMeshContext(context);
 
-    return liveQueryStore.execute({
+    const executionParams = {
       document: ensureDocumentNode(document),
       contextValue,
       rootValue: rootValue || {},
       variableValues: variables || {},
       schema: unifiedSchema,
       operationName,
+    } as const;
+
+    const executionResult = await liveQueryStore.execute(executionParams);
+
+    pubsub.publish('onExecutionDone', {
+      ...executionParams,
+      executionResult: executionResult as any,
     });
+
+    return executionResult;
   }
 
   async function meshSubscribe<TVariables = any, TContext = any, TRootValue = any, TData = any>(
@@ -257,14 +264,23 @@ export async function getMesh(options: GetMeshOptions): Promise<MeshInstance> {
   ) {
     const contextValue = context && context[MESH_CONTEXT_SYMBOL] ? context : await buildMeshContext(context);
 
-    return subscribe({
+    const executionParams = {
       document: ensureDocumentNode(document),
       contextValue,
       rootValue: rootValue || {},
       variableValues: variables || {},
       schema: unifiedSchema,
       operationName,
+    } as const;
+
+    const executionResult = await subscribe(executionParams);
+
+    pubsub.publish('onExecutionDone', {
+      ...executionParams,
+      executionResult: executionResult as any,
     });
+
+    return executionResult;
   }
 
   const localRequester: Requester = async <Result, TVariables, TContext, TRootValue>(

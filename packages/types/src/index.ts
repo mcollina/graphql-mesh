@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 import { IResolvers } from '@graphql-tools/utils';
-import { GraphQLSchema, GraphQLResolveInfo, DocumentNode } from 'graphql';
+import { GraphQLSchema, GraphQLResolveInfo, DocumentNode, ExecutionArgs, ExecutionResult } from 'graphql';
 import * as YamlConfig from './config';
 import { KeyValueCache, KeyValueCacheSetOptions } from 'fetchache';
 import { Executor, Subscriber, Transform, MergedTypeConfig } from '@graphql-tools/delegate';
@@ -53,6 +53,7 @@ export type AllHooks = {
   resolverCalled: { resolverData: ResolverData };
   resolverDone: { resolverData: ResolverData; result: any };
   resolverError: { resolverData: ResolverData; error: Error };
+  onExecutionDone: ExecutionArgs & { executionResult: ExecutionResult };
   [key: string]: any;
 };
 export type HookName = keyof AllHooks & string;
