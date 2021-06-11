@@ -7,7 +7,7 @@ async function testSdk(city: string) {
     console.log(`Running query, looking for GitHub developers from ${city}...`);
     const result = await sdk.citiesAndDevelopers({ city });
 
-    console.table(result.allCities?.nodes[0]?.developers, ['login', 'avatarUrl']);
+    console.table(result.allCities?.nodes[0]?.developers?.nodes, ['id', 'login', 'name', 'avatarUrl']);
   } catch (e) {
     console.error(e);
   }

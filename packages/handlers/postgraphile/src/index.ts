@@ -2,7 +2,7 @@
 import { GetMeshSourceOptions, MeshHandler, MeshSource, YamlConfig, MeshPubSub } from '@graphql-mesh/types';
 import { Plugin } from 'postgraphile';
 import { getPostGraphileBuilder } from 'postgraphile-core';
-import { Pool } from 'pg';
+import pg from 'pg';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { loadFromModuleExportExpression, readJSON } from '@graphql-mesh/utils';
@@ -24,14 +24,14 @@ export default class PostGraphileHandler implements MeshHandler {
   }
 
   async getMeshSource(): Promise<MeshSource> {
-    let pgPool: Pool;
+    let pgPool: pg.Pool;
 
     if (typeof this.config?.pool === 'string') {
       pgPool = await loadFromModuleExportExpression<any>(this.config.pool, { cwd: this.baseDir });
     }
 
     if (!pgPool || !('connect' in pgPool)) {
-      pgPool = new Pool({
+      pgPool = new pg.Pool({
         connectionString: this.config.connectionString,
         ...this.config?.pool,
       });
