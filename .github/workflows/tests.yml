@@ -97,7 +97,7 @@ jobs:
         with:
           postgresql db: postgres
           postgresql user: postgres
-          postresql password: docker
+          postgresql password: docker
       - name: Load Postgres Data
         run: curl https://raw.githubusercontent.com/morenoh149/postgresDBSamples/master/worldDB-1.0/world.sql | psql -h localhost -d postgres -U postgres
         env:
