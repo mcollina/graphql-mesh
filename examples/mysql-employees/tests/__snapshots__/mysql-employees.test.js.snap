@@ -857,43 +857,33 @@ Object {
   "data": Object {
     "getEmployees": Array [
       Object {
-        "birth_date": "1953-09-01",
         "emp_no": 10001,
         "first_name": "Georgi",
         "gender": "M",
-        "hire_date": "1986-06-25",
         "last_name": "Facello",
       },
       Object {
-        "birth_date": "1964-06-01",
         "emp_no": 10002,
         "first_name": "Bezalel",
         "gender": "F",
-        "hire_date": "1985-11-20",
         "last_name": "Simmel",
       },
       Object {
-        "birth_date": "1959-12-02",
         "emp_no": 10003,
         "first_name": "Parto",
         "gender": "M",
-        "hire_date": "1986-08-27",
         "last_name": "Bamford",
       },
       Object {
-        "birth_date": "1954-04-30",
         "emp_no": 10004,
         "first_name": "Chirstian",
         "gender": "M",
-        "hire_date": "1986-11-30",
         "last_name": "Koblick",
       },
       Object {
-        "birth_date": "1955-01-20",
         "emp_no": 10005,
         "first_name": "Kyoichi",
         "gender": "M",
-        "hire_date": "1989-09-11",
         "last_name": "Maliniak",
       },
     ],
