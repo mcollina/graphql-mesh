@@ -1,12 +1,11 @@
 import { promises as fsPromises } from 'fs';
 import { join } from 'path';
-import { pathExists, writeFile, flatString, jsonFlatStringify } from '@graphql-mesh/utils';
-import { Source, buildSchema } from 'graphql';
+import { flatString, pathExists, writeFile } from '@graphql-mesh/utils';
 import { Change, CriticalityLevel, diff } from '@graphql-inspector/core';
 import AggregateError from '@ardatan/aggregate-error';
 import { printSchemaWithDirectives } from '@graphql-tools/utils';
 
-const { readFile, unlink } = fsPromises;
+const { unlink } = fsPromises;
 
 export class ReadonlyStoreError extends Error {}
 
@@ -44,23 +43,30 @@ export class InMemoryStoreStorageAdapter implements StoreStorageAdapter {
 }
 
 export class FsStoreStorageAdapter implements StoreStorageAdapter {
+  constructor(private moduleExtension: 'mjs' | 'js' = 'mjs') {}
+  private getWrittenFileName(key: string) {
+    return key + '.' + this.moduleExtension;
+  }
+
   async exists(key: string): Promise<boolean> {
-    return pathExists(key);
+    const filePath = this.getWrittenFileName(key);
+    return pathExists(filePath);
   }
 
   async read<TData>(key: string, options: ProxyOptions<any>): Promise<TData> {
-    const asString = await readFile(key, 'utf-8');
-
-    return options.parse(asString);
+    const filePath = this.getWrittenFileName(key);
+    return import(filePath).then(m => m.default || m);
   }
 
   async write<TData>(key: string, data: TData, options: ProxyOptions<any>): Promise<void> {
-    const asString = options.serialize(data);
-    return writeFile(key, asString);
+    const asString = options.codify(data, key);
+    const filePath = this.getWrittenFileName(key);
+    return writeFile(filePath, flatString(asString));
   }
 
   async delete(key: string): Promise<void> {
-    return unlink(key);
+    const filePath = this.getWrittenFileName(key);
+    return unlink(filePath);
   }
 }
 
@@ -72,9 +78,8 @@ export type StoreProxy<TData> = {
 };
 
 export type ProxyOptions<TData> = {
-  parse: (content: string) => TData;
-  serialize: (value: TData) => string;
-  validate: (oldValue: TData, newValue: TData) => void | Promise<void>;
+  codify: (value: TData, identifier: string) => string;
+  validate: (oldValue: TData, newValue: TData, identifier: string) => void | Promise<void>;
 };
 
 export type StoreFlags = {
@@ -88,24 +93,31 @@ export enum PredefinedProxyOptionsName {
   GraphQLSchemaWithDiffing = 'GraphQLSchemaWithDiffing',
 }
 
+const escapeForTemplateLiteral = (str: string) => str.split('`').join('\\`').split('$').join('\\$');
+
 export const PredefinedProxyOptions: Record<PredefinedProxyOptionsName, ProxyOptions<any>> = {
   JsonWithoutValidation: {
-    parse: v => JSON.parse(v),
-    serialize: v => jsonFlatStringify(v),
+    codify: v => `export default ${JSON.stringify(v, null, 2)}`,
     validate: () => null,
   },
   StringWithoutValidation: {
-    parse: v => flatString(v),
-    serialize: v => flatString(v),
+    codify: v => `export default \`${escapeForTemplateLiteral(v)}\``,
     validate: () => null,
   },
   GraphQLSchemaWithDiffing: {
-    parse: schemaStr =>
-      buildSchema(new Source(schemaStr, 'schema.graphql'), {
-        assumeValid: true,
-        assumeValidSDL: true,
-      }),
-    serialize: schema => printSchemaWithDirectives(schema),
+    codify: (schema, identifier) =>
+      `
+import { buildSchema, Source } from 'graphql';
+
+const source = new Source(/* GraphQL */\`
+${escapeForTemplateLiteral(printSchemaWithDirectives(schema))}
+\`, \`${identifier}\`);
+
+export default buildSchema(source, {
+  assumeValid: true,
+  assumeValidSDL: true
+});
+    `.trim(),
     validate: (oldSchema, newSchema) => {
       const changes: Change[] = diff(oldSchema, newSchema);
       const errors: string[] = [];
@@ -152,7 +164,7 @@ export class MeshStore {
       await ensureValueCached();
       if (value && newValue) {
         try {
-          await options.validate(value, newValue);
+          await options.validate(value, newValue, id);
         } catch (e) {
           throw new ValidationError(`Validation failed for "${id}" under "${this.identifier}": ${e.message}`);
         }
