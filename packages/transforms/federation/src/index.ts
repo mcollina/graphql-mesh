@@ -6,7 +6,6 @@ import {
   GraphQLNonNull,
   isObjectType,
   GraphQLUnionType,
-  printSchema,
 } from 'graphql';
 import { MeshTransform, YamlConfig, MeshTransformOptions } from '@graphql-mesh/types';
 import { loadFromModuleExportExpression } from '@graphql-mesh/utils';
@@ -14,7 +13,7 @@ import { FederationConfig, FederationFieldsConfig } from 'graphql-transform-fede
 import { addFederationAnnotations } from 'graphql-transform-federation/dist/transform-sdl.js';
 import _ from 'lodash';
 import { entitiesField, EntityType, serviceField } from '@apollo/federation/dist/types.js';
-import { mapSchema, MapperKind } from '@graphql-tools/utils';
+import { mapSchema, MapperKind, printSchemaWithDirectives } from '@graphql-tools/utils';
 
 import federationToStitchingSDL from 'federation-to-stitching-sdl';
 
@@ -106,7 +105,10 @@ export default class FederationTransform implements MeshTransform {
 
     const hasEntities = !!Object.keys(entityTypes).length;
 
-    const schemaWithFederationDirectives = addFederationAnnotations(printSchema(schema), federationConfig);
+    const schemaWithFederationDirectives = addFederationAnnotations(
+      printSchemaWithDirectives(schema),
+      federationConfig
+    );
 
     const sdlWithStitchingDirectives = federationToStitchingSDL(schemaWithFederationDirectives);
     const schemaWithStitchingDirectives = mergeSchemas({ schemas: [schema], typeDefs: [sdlWithStitchingDirectives] });
