@@ -1,5 +1,5 @@
 query GetSomeEmployees {
-  getEmployees(limit: 5, orderBy: { emp_no: asc }) {
+  employees(limit: 5, orderBy: { emp_no: asc }) {
     emp_no
     first_name
     last_name

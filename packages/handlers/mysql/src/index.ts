@@ -3,9 +3,7 @@ import { SchemaComposer, EnumTypeComposerValueConfigDefinition } from 'graphql-c
 import { TableForeign, createPool, Pool } from 'mysql';
 import { upgrade, introspection } from 'mysql-utilities';
 import { promisify } from 'util';
-import { pascalCase } from 'pascal-case';
 import graphqlFields from 'graphql-fields';
-import { camelCase } from 'camel-case';
 import {
   GraphQLBigInt,
   GraphQLDateTime,
@@ -17,7 +15,7 @@ import {
   GraphQLUnsignedFloat,
 } from 'graphql-scalars';
 import { specifiedDirectives } from 'graphql';
-import { loadFromModuleExportExpression } from '@graphql-mesh/utils';
+import { loadFromModuleExportExpression, sanitizeNameForGraphQL } from '@graphql-mesh/utils';
 import { MeshStore, PredefinedProxyOptions } from '@graphql-mesh/store';
 
 const SCALARS = {
@@ -191,11 +189,11 @@ export default class MySQLHandler implements MeshHandler {
     await Promise.all(
       Object.keys(tables).map(async tableName => {
         const table = tables[tableName];
-        const objectTypeName = pascalCase(table.TABLE_NAME);
-        const insertInputName = pascalCase(table.TABLE_NAME + '_InsertInput');
-        const updateInputName = pascalCase(table.TABLE_NAME + '_UpdateInput');
-        const whereInputName = pascalCase(table.TABLE_NAME + '_WhereInput');
-        const orderByInputName = pascalCase(table.TABLE_NAME + '_OrderByInput');
+        const objectTypeName = table.TABLE_NAME;
+        const insertInputName = table.TABLE_NAME + '_InsertInput';
+        const updateInputName = table.TABLE_NAME + '_UpdateInput';
+        const whereInputName = table.TABLE_NAME + '_WhereInput';
+        const orderByInputName = table.TABLE_NAME + '_OrderByInput';
         const tableTC = schemaComposer.createObjectTC({
           name: objectTypeName,
           description: table.TABLE_COMMENT,
@@ -238,14 +236,11 @@ export default class MySQLHandler implements MeshHandler {
             let type: string = SCALARS[realTypeName];
             if (realTypeName === 'enum' || realTypeName === 'set') {
               const enumValues = typeDetails.split(`'`).join('').split(',');
-              const enumTypeName = pascalCase(tableName + '_' + fieldName);
+              const enumTypeName = tableName + '_' + fieldName;
               schemaComposer.createEnumTC({
                 name: enumTypeName,
                 values: enumValues.reduce((prev, curr) => {
-                  let enumKey = pascalCase(curr).toUpperCase();
-                  if (!isNaN(parseInt(enumKey[0]))) {
-                    enumKey = '_' + enumKey;
-                  }
+                  const enumKey = sanitizeNameForGraphQL(curr);
                   return {
                     ...prev,
                     [enumKey]: {
@@ -302,16 +297,15 @@ export default class MySQLHandler implements MeshHandler {
             const columnName = tableForeign.COLUMN_NAME;
             const foreignTableName = tableForeign.REFERENCED_TABLE_NAME;
             const foreignColumnName = tableForeign.REFERENCED_COLUMN_NAME;
-            const foreignTypeName = pascalCase(foreignTableName);
             tableTC.addFields({
               [foreignTableName]: {
-                type: '[' + foreignTypeName + ']',
+                type: '[' + foreignTableName + ']',
                 args: {
                   where: {
-                    type: foreignTypeName + 'WhereInput',
+                    type: foreignTableName + '_WhereInput',
                   },
                   orderBy: {
-                    type: foreignTypeName + 'OrderByInput',
+                    type: foreignTableName + '_OrderByInput',
                   },
                   limit: {
                     type: 'Int',
@@ -343,7 +337,7 @@ export default class MySQLHandler implements MeshHandler {
           })
         );
         schemaComposer.Query.addFields({
-          [camelCase(`get_${tableName}`)]: {
+          [tableName]: {
             type: '[' + objectTypeName + ']',
             args: {
               limit: {
@@ -385,7 +379,7 @@ export default class MySQLHandler implements MeshHandler {
           },
         });
         schemaComposer.Query.addFields({
-          [camelCase(`count_${tableName}`)]: {
+          [`count_${tableName}`]: {
             type: 'Int',
             args: {
               where: {
@@ -398,7 +392,7 @@ export default class MySQLHandler implements MeshHandler {
           },
         });
         schemaComposer.Mutation.addFields({
-          [camelCase(`insert_${tableName}`)]: {
+          [`insert_${tableName}`]: {
             type: objectTypeName,
             args: {
               [tableName]: {
@@ -417,7 +411,7 @@ export default class MySQLHandler implements MeshHandler {
               return result[0];
             },
           },
-          [camelCase(`update_${tableName}`)]: {
+          [`update_${tableName}`]: {
             type: objectTypeName,
             args: {
               [tableName]: {
@@ -435,7 +429,7 @@ export default class MySQLHandler implements MeshHandler {
               return result[0];
             },
           },
-          [camelCase(`delete_${tableName}`)]: {
+          [`delete_${tableName}`]: {
             type: 'Boolean',
             args: {
               where: {
