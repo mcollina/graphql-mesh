@@ -1,0 +1,902 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MySQL Employees should generate correct schema: mysql-rfam-schema 1`] = `
+"\\"\\"\\"VIEW\\"\\"\\"
+type CurrentDeptEmp {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input CurrentDeptEmpInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input CurrentDeptEmpOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: OrderBy
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input CurrentDeptEmpUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input CurrentDeptEmpWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: String
+}
+
+\\"\\"\\"
+A date string, such as 2007-12-03, compliant with the \`full-date\` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+\\"\\"\\"
+scalar Date
+
+\\"\\"\\"\\"\\"\\"
+type Departments {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: String!
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+}
+
+\\"\\"\\"\\"\\"\\"
+input DepartmentsInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: String!
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+}
+
+\\"\\"\\"\\"\\"\\"
+input DepartmentsOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: OrderBy
+}
+
+\\"\\"\\"\\"\\"\\"
+input DepartmentsUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: String
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+}
+
+\\"\\"\\"\\"\\"\\"
+input DepartmentsWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: String
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+}
+
+\\"\\"\\"\\"\\"\\"
+type DeptEmp {
+  departments(limit: Int, offset: Int, orderBy: DepartmentsOrderByInput, where: DepartmentsWhereInput): [Departments]
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+  employees(limit: Int, offset: Int, orderBy: EmployeesOrderByInput, where: EmployeesWhereInput): [Employees]
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date!
+}
+
+\\"\\"\\"\\"\\"\\"
+input DeptEmpInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date!
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+type DeptEmpLatestDate {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input DeptEmpLatestDateInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input DeptEmpLatestDateOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: OrderBy
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input DeptEmpLatestDateUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input DeptEmpLatestDateWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: String
+}
+
+\\"\\"\\"\\"\\"\\"
+input DeptEmpOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: OrderBy
+}
+
+\\"\\"\\"\\"\\"\\"
+input DeptEmpUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"\\"\\"\\"
+input DeptEmpWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: String
+}
+
+\\"\\"\\"\\"\\"\\"
+type DeptManager {
+  departments(limit: Int, offset: Int, orderBy: DepartmentsOrderByInput, where: DepartmentsWhereInput): [Departments]
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+  employees(limit: Int, offset: Int, orderBy: EmployeesOrderByInput, where: EmployeesWhereInput): [Employees]
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date!
+}
+
+\\"\\"\\"\\"\\"\\"
+input DeptManagerInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date!
+}
+
+\\"\\"\\"\\"\\"\\"
+input DeptManagerOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: OrderBy
+}
+
+\\"\\"\\"\\"\\"\\"
+input DeptManagerUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"\\"\\"\\"
+input DeptManagerWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: String
+}
+
+\\"\\"\\"\\"\\"\\"
+type Employees {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: String!
+
+  \\"\\"\\"\\"\\"\\"
+  gender: EmployeesGender!
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: String!
+}
+
+enum EmployeesGender {
+  F
+  M
+}
+
+\\"\\"\\"\\"\\"\\"
+input EmployeesInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: String!
+
+  \\"\\"\\"\\"\\"\\"
+  gender: EmployeesGender!
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: String!
+}
+
+\\"\\"\\"\\"\\"\\"
+input EmployeesOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  gender: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: OrderBy
+}
+
+\\"\\"\\"\\"\\"\\"
+input EmployeesUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: String
+
+  \\"\\"\\"\\"\\"\\"
+  gender: EmployeesGender
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: String
+}
+
+\\"\\"\\"\\"\\"\\"
+input EmployeesWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: String
+
+  \\"\\"\\"\\"\\"\\"
+  gender: String
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: String
+}
+
+type Mutation {
+  deleteCurrentDeptEmp(where: CurrentDeptEmpWhereInput): Boolean
+  deleteDepartments(where: DepartmentsWhereInput): Boolean
+  deleteDeptEmp(where: DeptEmpWhereInput): Boolean
+  deleteDeptEmpLatestDate(where: DeptEmpLatestDateWhereInput): Boolean
+  deleteDeptManager(where: DeptManagerWhereInput): Boolean
+  deleteEmployees(where: EmployeesWhereInput): Boolean
+  deleteSalaries(where: SalariesWhereInput): Boolean
+  deleteTitles(where: TitlesWhereInput): Boolean
+  deleteVFullDepartments(where: VFullDepartmentsWhereInput): Boolean
+  deleteVFullEmployees(where: VFullEmployeesWhereInput): Boolean
+  insertCurrentDeptEmp(current_dept_emp: CurrentDeptEmpInsertInput!): CurrentDeptEmp
+  insertDepartments(departments: DepartmentsInsertInput!): Departments
+  insertDeptEmp(dept_emp: DeptEmpInsertInput!): DeptEmp
+  insertDeptEmpLatestDate(dept_emp_latest_date: DeptEmpLatestDateInsertInput!): DeptEmpLatestDate
+  insertDeptManager(dept_manager: DeptManagerInsertInput!): DeptManager
+  insertEmployees(employees: EmployeesInsertInput!): Employees
+  insertSalaries(salaries: SalariesInsertInput!): Salaries
+  insertTitles(titles: TitlesInsertInput!): Titles
+  insertVFullDepartments(v_full_departments: VFullDepartmentsInsertInput!): VFullDepartments
+  insertVFullEmployees(v_full_employees: VFullEmployeesInsertInput!): VFullEmployees
+  updateCurrentDeptEmp(current_dept_emp: CurrentDeptEmpUpdateInput!, where: CurrentDeptEmpWhereInput): CurrentDeptEmp
+  updateDepartments(departments: DepartmentsUpdateInput!, where: DepartmentsWhereInput): Departments
+  updateDeptEmp(dept_emp: DeptEmpUpdateInput!, where: DeptEmpWhereInput): DeptEmp
+  updateDeptEmpLatestDate(dept_emp_latest_date: DeptEmpLatestDateUpdateInput!, where: DeptEmpLatestDateWhereInput): DeptEmpLatestDate
+  updateDeptManager(dept_manager: DeptManagerUpdateInput!, where: DeptManagerWhereInput): DeptManager
+  updateEmployees(employees: EmployeesUpdateInput!, where: EmployeesWhereInput): Employees
+  updateSalaries(salaries: SalariesUpdateInput!, where: SalariesWhereInput): Salaries
+  updateTitles(titles: TitlesUpdateInput!, where: TitlesWhereInput): Titles
+  updateVFullDepartments(v_full_departments: VFullDepartmentsUpdateInput!, where: VFullDepartmentsWhereInput): VFullDepartments
+  updateVFullEmployees(v_full_employees: VFullEmployeesUpdateInput!, where: VFullEmployeesWhereInput): VFullEmployees
+}
+
+enum OrderBy {
+  asc
+  desc
+}
+
+type Query {
+  countCurrentDeptEmp(where: CurrentDeptEmpWhereInput): Int
+  countDepartments(where: DepartmentsWhereInput): Int
+  countDeptEmp(where: DeptEmpWhereInput): Int
+  countDeptEmpLatestDate(where: DeptEmpLatestDateWhereInput): Int
+  countDeptManager(where: DeptManagerWhereInput): Int
+  countEmployees(where: EmployeesWhereInput): Int
+  countSalaries(where: SalariesWhereInput): Int
+  countTitles(where: TitlesWhereInput): Int
+  countVFullDepartments(where: VFullDepartmentsWhereInput): Int
+  countVFullEmployees(where: VFullEmployeesWhereInput): Int
+  getCurrentDeptEmp(limit: Int, offset: Int, orderBy: CurrentDeptEmpOrderByInput, where: CurrentDeptEmpWhereInput): [CurrentDeptEmp]
+  getDepartments(limit: Int, offset: Int, orderBy: DepartmentsOrderByInput, where: DepartmentsWhereInput): [Departments]
+  getDeptEmp(limit: Int, offset: Int, orderBy: DeptEmpOrderByInput, where: DeptEmpWhereInput): [DeptEmp]
+  getDeptEmpLatestDate(limit: Int, offset: Int, orderBy: DeptEmpLatestDateOrderByInput, where: DeptEmpLatestDateWhereInput): [DeptEmpLatestDate]
+  getDeptManager(limit: Int, offset: Int, orderBy: DeptManagerOrderByInput, where: DeptManagerWhereInput): [DeptManager]
+  getEmployees(limit: Int, offset: Int, orderBy: EmployeesOrderByInput, where: EmployeesWhereInput): [Employees]
+  getSalaries(limit: Int, offset: Int, orderBy: SalariesOrderByInput, where: SalariesWhereInput): [Salaries]
+  getTitles(limit: Int, offset: Int, orderBy: TitlesOrderByInput, where: TitlesWhereInput): [Titles]
+  getVFullDepartments(limit: Int, offset: Int, orderBy: VFullDepartmentsOrderByInput, where: VFullDepartmentsWhereInput): [VFullDepartments]
+  getVFullEmployees(limit: Int, offset: Int, orderBy: VFullEmployeesOrderByInput, where: VFullEmployeesWhereInput): [VFullEmployees]
+}
+
+\\"\\"\\"\\"\\"\\"
+type Salaries {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+  employees(limit: Int, offset: Int, orderBy: EmployeesOrderByInput, where: EmployeesWhereInput): [Employees]
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  salary: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date!
+}
+
+\\"\\"\\"\\"\\"\\"
+input SalariesInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  salary: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date!
+}
+
+\\"\\"\\"\\"\\"\\"
+input SalariesOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  salary: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: OrderBy
+}
+
+\\"\\"\\"\\"\\"\\"
+input SalariesUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  salary: Int
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"\\"\\"\\"
+input SalariesWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  salary: String
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: String
+}
+
+\\"\\"\\"\\"\\"\\"
+type Titles {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+  employees(limit: Int, offset: Int, orderBy: EmployeesOrderByInput, where: EmployeesWhereInput): [Employees]
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  title: String!
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"\\"\\"\\"
+input TitlesInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  title: String!
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"\\"\\"\\"
+input TitlesOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  title: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: OrderBy
+}
+
+\\"\\"\\"\\"\\"\\"
+input TitlesUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  title: String
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: Date
+}
+
+\\"\\"\\"\\"\\"\\"
+input TitlesWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  emp_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  from_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  title: String
+
+  \\"\\"\\"\\"\\"\\"
+  to_date: String
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+type VFullDepartments {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: String!
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+
+  \\"\\"\\"\\"\\"\\"
+  manager: String
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input VFullDepartmentsInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: String!
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String!
+
+  \\"\\"\\"\\"\\"\\"
+  manager: String
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input VFullDepartmentsOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  manager: OrderBy
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input VFullDepartmentsUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: String
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  manager: String
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input VFullDepartmentsWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  dept_name: String
+
+  \\"\\"\\"\\"\\"\\"
+  dept_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  manager: String
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+type VFullEmployees {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  department: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: String!
+
+  \\"\\"\\"\\"\\"\\"
+  gender: VFullEmployeesGender!
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: String!
+}
+
+enum VFullEmployeesGender {
+  F
+  M
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input VFullEmployeesInsertInput {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  department: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int!
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: String!
+
+  \\"\\"\\"\\"\\"\\"
+  gender: VFullEmployeesGender!
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: Date!
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: String!
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input VFullEmployeesOrderByInput {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  department: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  gender: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: OrderBy
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: OrderBy
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input VFullEmployeesUpdateInput {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  department: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: Int
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: String
+
+  \\"\\"\\"\\"\\"\\"
+  gender: VFullEmployeesGender
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: Date
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: String
+}
+
+\\"\\"\\"VIEW\\"\\"\\"
+input VFullEmployeesWhereInput {
+  \\"\\"\\"\\"\\"\\"
+  birth_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  department: String
+
+  \\"\\"\\"\\"\\"\\"
+  emp_no: String
+
+  \\"\\"\\"\\"\\"\\"
+  first_name: String
+
+  \\"\\"\\"\\"\\"\\"
+  gender: String
+
+  \\"\\"\\"\\"\\"\\"
+  hire_date: String
+
+  \\"\\"\\"\\"\\"\\"
+  last_name: String
+}
+"
+`;
+
+exports[`MySQL Employees should give correct response for example queries: example-query.graphql-query-result 1`] = `
+Object {
+  "data": Object {
+    "getEmployees": Array [
+      Object {
+        "birth_date": "1953-09-01",
+        "emp_no": 10001,
+        "first_name": "Georgi",
+        "gender": "M",
+        "hire_date": "1986-06-25",
+        "last_name": "Facello",
+      },
+      Object {
+        "birth_date": "1964-06-01",
+        "emp_no": 10002,
+        "first_name": "Bezalel",
+        "gender": "F",
+        "hire_date": "1985-11-20",
+        "last_name": "Simmel",
+      },
+      Object {
+        "birth_date": "1959-12-02",
+        "emp_no": 10003,
+        "first_name": "Parto",
+        "gender": "M",
+        "hire_date": "1986-08-27",
+        "last_name": "Bamford",
+      },
+      Object {
+        "birth_date": "1954-04-30",
+        "emp_no": 10004,
+        "first_name": "Chirstian",
+        "gender": "M",
+        "hire_date": "1986-11-30",
+        "last_name": "Koblick",
+      },
+      Object {
+        "birth_date": "1955-01-20",
+        "emp_no": 10005,
+        "first_name": "Kyoichi",
+        "gender": "M",
+        "hire_date": "1989-09-11",
+        "last_name": "Maliniak",
+      },
+    ],
+  },
+}
+`;

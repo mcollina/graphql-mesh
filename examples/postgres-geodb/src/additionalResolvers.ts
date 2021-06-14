@@ -17,7 +17,7 @@ export const resolvers: Resolvers = {
         const nodesSelectionsStr = nodesField.selectionSet.selections.map(selection => print(selection)).join('\n');
         return context.Github.Query.Githubsearch({
           args: {
-            type: GithubSearchType.USER,
+            type: 'USER' as GithubSearchType,
             query: `location:${name}`,
             first: limit,
           },

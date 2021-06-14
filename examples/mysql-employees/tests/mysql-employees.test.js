@@ -2,21 +2,19 @@ const { findAndParseConfig } = require('@graphql-mesh/config');
 const { getMesh } = require('@graphql-mesh/runtime');
 const { basename, join } = require('path');
 
-const { introspectionFromSchema, lexicographicSortSchema } = require('graphql');
+const { printSchema, lexicographicSortSchema } = require('graphql');
 
-describe.skip('MySQL Rfam', () => {
-  jest.setTimeout(30000);
-  let config$, mesh$;
-  beforeAll(() => {
-    config$ = findAndParseConfig({
-      dir: join(__dirname, '..'),
-    });
-    config$.then(config => getMesh(config));
-  })
+const config$ = findAndParseConfig({
+  dir: join(__dirname, '..'),
+});
+const mesh$ = config$.then(config => getMesh(config));
+jest.setTimeout(30000);
+
+describe('MySQL Employees', () => {
   it('should generate correct schema', async () => {
     const { schema } = await mesh$;
     expect(
-      introspectionFromSchema(lexicographicSortSchema(schema), {
+      printSchema(lexicographicSortSchema(schema), {
         descriptions: false,
       })
     ).toMatchSnapshot('mysql-rfam-schema');
