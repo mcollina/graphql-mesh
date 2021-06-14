@@ -110,11 +110,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{matrix.node_version}}-jest-${{ hashFiles('yarn.lock') }}
             ${{ runner.os }}-${{matrix.node_version}}-jest-
+      - name: Download Postgres Dump
+        run: 'curl https://raw.githubusercontent.com/morenoh149/postgresDBSamples/master/worldDB-1.0/world.sql -o /tmp/backup.sql'
       - name: Load Postgres Data
         uses: tj-actions/pg-restore@v4.5
         with:
           database_url: 'postgres://postgres:docker@localhost:5432/postgres'
-          backup_file: 'curl https://raw.githubusercontent.com/morenoh149/postgresDBSamples/master/worldDB-1.0/world.sql'
+          backup_file: '/tmp/backup.sql'
       - name: Test
         run: yarn test
         env:
