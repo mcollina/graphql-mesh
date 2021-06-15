@@ -126,7 +126,7 @@ export const rootJson = ${JSON.stringify(rootJson, null, 2)};
           options = {
             ...this.config.protoFilePath.load,
             includeDirs: this.config.protoFilePath.load.includeDirs?.map(includeDir =>
-              isAbsolute(includeDir) ? includeDir : join(this.baseDir || process.cwd(), includeDir)
+              isAbsolute(includeDir) ? includeDir : join(this.baseDir, includeDir)
             ),
           };
           if (options.includeDirs) {

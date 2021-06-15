@@ -10,11 +10,12 @@ import { writeFile, pathExists, rmdirs } from '@graphql-mesh/utils';
 import { spinner } from './spinner';
 import { handleFatalError } from './handleFatalError';
 import { createRequire } from 'module';
+import { cwd, env } from 'process';
 
 export { generateTsArtifacts, serveMesh };
 
 export async function graphqlMesh() {
-  let baseDir = process.cwd();
+  let baseDir = cwd();
   let logger = new DefaultLogger('Mesh');
 
   const cjsImport = createRequire(import.meta.url);
@@ -31,7 +32,7 @@ export async function graphqlMesh() {
       coerce: (externalModules: string[]) =>
         Promise.all(
           externalModules.map(module => {
-            const localModulePath = resolve(process.cwd(), module);
+            const localModulePath = resolve(baseDir, module);
             const islocalModule = existsSync(localModulePath);
             return import(islocalModule ? localModulePath : module);
           })
@@ -40,12 +41,12 @@ export async function graphqlMesh() {
     .option('dir', {
       describe: 'Modified the base directory to use for looking for meshrc config file',
       type: 'string',
-      default: process.cwd(),
+      default: baseDir,
       coerce: dir => {
         if (isAbsolute(dir)) {
           baseDir = dir;
         } else {
-          baseDir = resolve(process.cwd(), dir);
+          baseDir = resolve(cwd(), dir);
         }
       },
     })
@@ -59,7 +60,7 @@ export async function graphqlMesh() {
       },
       async args => {
         try {
-          process.env.NODE_ENV = 'development';
+          env.NODE_ENV = 'development';
           const result = await serveMesh({
             baseDir,
             argsPort: args.port,
@@ -86,7 +87,7 @@ export async function graphqlMesh() {
             );
             return;
           }
-          process.env.NODE_ENV = 'production';
+          env.NODE_ENV = 'production';
           const result = await serveMesh({
             baseDir,
             argsPort: args.port,

@@ -2,11 +2,7 @@ import { GraphQLSchema, GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql
 import { MeshTransform, YamlConfig, MeshTransformOptions } from '@graphql-mesh/types';
 import { addMocksToSchema, createMockStore, IMocks } from '@graphql-tools/mock';
 import faker from 'faker';
-import {
-  getInterpolatedStringFactory,
-  loadFromModuleExportExpression,
-  loadFromModuleExportExpressionSync,
-} from '@graphql-mesh/utils';
+import { getInterpolatedStringFactory, loadFromModuleExportExpression } from '@graphql-mesh/utils';
 
 export default class MockingTransform implements MeshTransform {
   private config: YamlConfig.MockingConfig;
@@ -24,8 +20,9 @@ export default class MockingTransform implements MeshTransform {
       const mocks: IMocks = {};
       const resolvers: any = {};
       if (this.config.initializeStore) {
-        const initializeStore = loadFromModuleExportExpressionSync(this.config.initializeStore, { cwd: this.baseDir });
-        initializeStore(store);
+        loadFromModuleExportExpression(this.config.initializeStore, { cwd: this.baseDir }).then(initializeStore =>
+          initializeStore(store)
+        );
       }
       if (this.config.mocks) {
         for (const fieldConfig of this.config.mocks) {
@@ -98,9 +95,11 @@ export default class MockingTransform implements MeshTransform {
                 }
                 mocks[typeName] = fakerFn;
               } else if (fieldConfig.custom) {
-                mocks[typeName] = () => {
-                  const exportedVal = loadFromModuleExportExpressionSync<any>(fieldConfig.custom);
-                  mocks[typeName] = typeof exportedVal === 'function' ? exportedVal(store) : exportedVal;
+                mocks[typeName] = async () => {
+                  const exportedVal = await loadFromModuleExportExpression<any>(fieldConfig.custom, {
+                    cwd: this.baseDir,
+                  });
+                  return typeof exportedVal === 'function' ? exportedVal(store) : exportedVal;
                 };
               }
             }

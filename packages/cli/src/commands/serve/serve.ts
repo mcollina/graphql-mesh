@@ -23,6 +23,7 @@ import { handleFatalError } from '../../handleFatalError';
 import { spinner } from '../../spinner';
 import open from 'open';
 import { useServer } from 'graphql-ws/lib/use/ws';
+import { env } from 'process';
 
 const { readFile } = fsPromises;
 
@@ -63,7 +64,7 @@ export async function serveMesh({ baseDir, argsPort }: ServeMeshOptions) {
     endpoint: graphqlPath = '/graphql',
     browser,
   } = meshConfig.config.serve || {};
-  const port = argsPort || parseInt(process.env.PORT) || configPort || 4000;
+  const port = argsPort || parseInt(env.PORT) || configPort || 4000;
 
   const protocol = sslCredentials ? 'https' : 'http';
   const serverUrl = `${protocol}://${hostname}:${port}`;
@@ -163,7 +164,7 @@ export async function serveMesh({ baseDir, argsPort }: ServeMeshOptions) {
 
     app.use(graphqlPath, graphqlUploadExpress({ maxFileSize, maxFiles }), graphqlHandler(mesh$));
 
-    if (typeof playground !== 'undefined' ? playground : process.env.NODE_ENV?.toLowerCase() !== 'production') {
+    if (typeof playground !== 'undefined' ? playground : env.NODE_ENV?.toLowerCase() !== 'production') {
       const playgroundMiddleware = playgroundMiddlewareFactory({
         baseDir,
         documents: meshConfig.documents,
@@ -178,7 +179,7 @@ export async function serveMesh({ baseDir, argsPort }: ServeMeshOptions) {
 
     httpServer
       .listen(parseInt(port.toString()), hostname, () => {
-        const shouldntOpenBrowser = process.env.NODE_ENV?.toLowerCase() === 'production' || browser === false;
+        const shouldntOpenBrowser = env.NODE_ENV?.toLowerCase() === 'production' || browser === false;
         if (!shouldntOpenBrowser) {
           open(serverUrl, typeof browser === 'string' ? { app: browser } : undefined).catch(() => {});
         }

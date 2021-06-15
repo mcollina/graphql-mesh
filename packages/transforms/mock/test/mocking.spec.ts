@@ -9,7 +9,7 @@ import MockingTransform from '../src';
 describe('mocking', () => {
   let cache: InMemoryLRUCache;
   let pubsub: MeshPubSub;
-  const baseDir: string = undefined;
+  const baseDir: string = __dirname;
 
   beforeEach(() => {
     cache = new InMemoryLRUCache();
@@ -112,11 +112,11 @@ describe('mocking', () => {
       mocks: [
         {
           apply: 'User.id',
-          custom: './packages/transforms/mock/test/mocks.ts#id',
+          custom: './mocks.ts#id',
         },
         {
           apply: 'User.fullName',
-          custom: './packages/transforms/mock/test/mocks.ts#fullName',
+          custom: './mocks.ts#fullName',
         },
       ],
     };
@@ -174,15 +174,15 @@ describe('mocking', () => {
             mocks: [
               {
                 apply: 'Query.user',
-                custom: './packages/transforms/mock/test/mocks.ts#GetUserMock',
+                custom: './mocks.ts#GetUserMock',
               },
               {
                 apply: 'Mutation.addUser',
-                custom: './packages/transforms/mock/test/mocks.ts#AddUserMock',
+                custom: './mocks.ts#AddUserMock',
               },
               {
                 apply: 'Mutation.updateUser',
-                custom: './packages/transforms/mock/test/mocks.ts#UpdateUserMock',
+                custom: './mocks.ts#UpdateUserMock',
               },
             ],
           },

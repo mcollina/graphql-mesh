@@ -21,6 +21,7 @@ import { EventEmitter } from 'events';
 import { CodeFileLoader } from '@graphql-tools/code-file-loader';
 import StitchingMerger from '@graphql-mesh/merger-stitching';
 import { MeshStore } from '@graphql-mesh/store';
+import { cwd, env } from 'process';
 
 export async function getPackage<T>(name: string, type: string, importFn: ImportFn): Promise<T> {
   const casedName = paramCase(name);
@@ -37,7 +38,7 @@ export async function getPackage<T>(name: string, type: string, importFn: Import
   if (name.includes('-')) {
     possibleNames.push(name);
   }
-  const possibleModules = possibleNames.concat(resolve(process.cwd(), name));
+  const possibleModules = possibleNames.concat(resolve(cwd(), name));
 
   for (const moduleName of possibleModules) {
     try {
@@ -260,7 +261,7 @@ export class DefaultLogger implements Logger {
   }
 
   debug(message: string) {
-    if (process.env.DEBUG) {
+    if (env.DEBUG) {
       return this.log(message);
     }
   }

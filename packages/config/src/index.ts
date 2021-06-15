@@ -46,7 +46,7 @@ export async function parseConfig(
 ) {
   let config: YamlConfig.Config;
   const { configFormat = 'object', dir: configDir = '' } = options || {};
-  const dir = isAbsolute(configDir) ? configDir : join(process.cwd(), configDir);
+  const dir = isAbsolute(configDir) ? configDir : join(cwd(), configDir);
 
   switch (configFormat) {
     case 'yaml':
@@ -208,7 +208,7 @@ export async function processConfig(
 
 function customLoader(ext: 'json' | 'yaml' | 'js') {
   function loader(filepath: string, content: string) {
-    if (typeof process !== 'undefined' && 'env' in process) {
+    if (env) {
       content = content.replace(/\$\{(.*?)\}/g, (_, variable) => {
         let varName = variable;
         let defaultValue = '';
@@ -219,7 +219,7 @@ function customLoader(ext: 'json' | 'yaml' | 'js') {
           defaultValue = spl.join(':');
         }
 
-        return process.env[varName] || defaultValue;
+        return env[varName] || defaultValue;
       });
     }
 
@@ -252,7 +252,7 @@ export function validateConfig(config: any): asserts config is YamlConfig.Config
 
 export async function findAndParseConfig(options?: { configName?: string } & ConfigProcessOptions) {
   const { configName = 'mesh', dir: configDir = '', ignoreAdditionalResolvers = false, ...restOptions } = options || {};
-  const dir = isAbsolute(configDir) ? configDir : join(process.cwd(), configDir);
+  const dir = isAbsolute(configDir) ? configDir : join(cwd(), configDir);
   const explorer = cosmiconfig(configName, {
     loaders: {
       '.json': customLoader('json'),
