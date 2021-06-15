@@ -53,7 +53,7 @@ export type AllHooks = {
   resolverCalled: { resolverData: ResolverData };
   resolverDone: { resolverData: ResolverData; result: any };
   resolverError: { resolverData: ResolverData; error: Error };
-  onExecutionDone: ExecutionArgs & { executionResult: ExecutionResult };
+  executionDone: ExecutionArgs & { executionResult: ExecutionResult };
   [key: string]: any;
 };
 export type HookName = keyof AllHooks & string;

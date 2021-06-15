@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { GetMeshSourceOptions, MeshHandler, MeshSource, YamlConfig, MeshPubSub } from '@graphql-mesh/types';
+import { GetMeshSourceOptions, MeshHandler, MeshSource, YamlConfig, MeshPubSub, Logger } from '@graphql-mesh/types';
 import { Plugin } from 'postgraphile';
 import { getPostGraphileBuilder } from 'postgraphile-core';
 import pg from 'pg';
@@ -14,13 +14,15 @@ export default class PostGraphileHandler implements MeshHandler {
   private baseDir: string;
   private pubsub: MeshPubSub;
   private pgCache: any;
+  private logger: Logger;
 
-  constructor({ name, config, baseDir, pubsub, store }: GetMeshSourceOptions<YamlConfig.PostGraphileHandler>) {
+  constructor({ name, config, baseDir, pubsub, store, logger }: GetMeshSourceOptions<YamlConfig.PostGraphileHandler>) {
     this.name = name;
     this.config = config;
     this.baseDir = baseDir;
     this.pubsub = pubsub;
     this.pgCache = store.proxy('pgCache.json', PredefinedProxyOptions.JsonWithoutValidation);
+    this.logger = logger;
   }
 
   async getMeshSource(): Promise<MeshSource> {
@@ -33,6 +35,7 @@ export default class PostGraphileHandler implements MeshHandler {
     if (!pgPool || !('connect' in pgPool)) {
       pgPool = new pg.Pool({
         connectionString: this.config.connectionString,
+        log: messages => messages.forEach((message: any) => this.logger.log(message)),
         ...this.config?.pool,
       });
     }
@@ -80,7 +83,7 @@ export default class PostGraphileHandler implements MeshHandler {
       await this.pgCache.set(cachedIntrospection);
     }
 
-    this.pubsub.subscribe('onExecutionDone', ({ contextValue }) => contextValue.pgClient.release());
+    this.pubsub.subscribe('executionDone', ({ contextValue }) => contextValue.pgClient.release());
 
     return {
       schema,

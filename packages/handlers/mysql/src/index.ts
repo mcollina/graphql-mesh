@@ -453,7 +453,7 @@ export default class MySQLHandler implements MeshHandler {
 
     introspectionConnection.connection.release();
 
-    this.pubsub.subscribe('onExecutionDone', ({ contextValue }) => contextValue.mysqlConnection.connection.destroy());
+    this.pubsub.subscribe('executionDone', ({ contextValue }) => contextValue.mysqlConnection.connection.destroy());
 
     return {
       schema,
