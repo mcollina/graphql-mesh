@@ -192,7 +192,7 @@ describe('mocking', () => {
         }),
       ],
     });
-    const ADD_USER = /* GraphQL */ parse(`
+    const ADD_USER = parse(/* GraphQL */ `
       mutation AddUser {
         addUser(name: "John Doe") {
           id
@@ -203,7 +203,7 @@ describe('mocking', () => {
     const addUserResult = await execute(mockedSchema, ADD_USER);
     expect(addUserResult?.data?.addUser?.name).toBe('John Doe');
     const addedUserId = addUserResult.data.addUser.id;
-    const GET_USER = /* GraphQL */ parse(`
+    const GET_USER = parse(/* GraphQL */ `
       query GetUser {
         user(id: "${addedUserId}") {
           id
@@ -214,7 +214,7 @@ describe('mocking', () => {
     const getUserResult = await execute(mockedSchema, GET_USER);
     expect(getUserResult?.data?.user?.id).toBe(addedUserId);
     expect(getUserResult?.data?.user?.name).toBe('John Doe');
-    const UPDATE_USER = /* GraphQL */ parse(`
+    const UPDATE_USER = parse(/* GraphQL */ `
       mutation UpdateUser {
         updateUser(id: "${addedUserId}", name: "Jane Doe") {
           id
@@ -291,7 +291,7 @@ describe('mocking', () => {
         }),
       ],
     });
-    const ADD_USER = /* GraphQL */ parse(`
+    const ADD_USER = parse(/* GraphQL */ `
       mutation AddUser {
         addUser(name: "John Doe") {
           id
@@ -302,7 +302,7 @@ describe('mocking', () => {
     const addUserResult = await execute(mockedSchema, ADD_USER);
     expect(addUserResult?.data?.addUser?.name).toBe('John Doe');
     const addedUserId = addUserResult.data.addUser.id;
-    const GET_USER = /* GraphQL */ parse(`
+    const GET_USER = parse(/* GraphQL */ `
       query GetUser {
         user(id: "${addedUserId}") {
           id
@@ -313,7 +313,7 @@ describe('mocking', () => {
     const getUserResult = await execute(mockedSchema, GET_USER);
     expect(getUserResult?.data?.user?.id).toBe(addedUserId);
     expect(getUserResult?.data?.user?.name).toBe('John Doe');
-    const UPDATE_USER = /* GraphQL */ parse(`
+    const UPDATE_USER = parse(/* GraphQL */ `
       mutation UpdateUser {
         updateUser(id: "${addedUserId}", name: "Jane Doe") {
           id
