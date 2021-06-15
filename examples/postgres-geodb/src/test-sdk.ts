@@ -1,4 +1,4 @@
-import { getMeshSDK } from '../.mesh';
+import { getMeshSDK } from '../.mesh/index';
 
 async function testSdk(city: string) {
   console.log(`Loading Mesh SDK...`);

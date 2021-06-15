@@ -3,17 +3,19 @@
   "version": "0.5.107",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "scripts": {
     "pretest-sdk": "yarn mesh:build",
-    "test-sdk": "ts-node src/test-sdk.ts London",
-    "mesh:serve": "mesh dev",
+    "test-sdk": "cross-env NODE_OPTIONS=\"--loader ts-node/esm.mjs\" node src/test-sdk.ts London",
+    "mesh:serve": "cross-env NODE_OPTIONS=\"--loader ts-node/esm.mjs\" mesh dev",
     "mesh:build": "mesh build",
-    "start": "yarn mesh:serve"
+    "start": "cross-env NODE_OPTIONS=\"--loader ts-node/esm.mjs\" yarn mesh:serve"
   },
   "devDependencies": {
     "@types/node": "14.14.3",
     "ts-node": "8.10.2",
-    "typescript": "4.0.5"
+    "typescript": "4.0.5",
+    "cross-env": "7.0.3"
   },
   "dependencies": {
     "@graphql-mesh/cli": "0.30.2",

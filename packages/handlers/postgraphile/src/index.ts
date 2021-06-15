@@ -35,7 +35,7 @@ export default class PostGraphileHandler implements MeshHandler {
     if (!pgPool || !('connect' in pgPool)) {
       pgPool = new pg.Pool({
         connectionString: this.config.connectionString,
-        log: messages => messages.forEach((message: any) => this.logger.log(message)),
+        log: messages => this.logger.log(messages),
         ...this.config?.pool,
       });
     }

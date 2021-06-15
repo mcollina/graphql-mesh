@@ -17,6 +17,7 @@ import {
 import { specifiedDirectives } from 'graphql';
 import { loadFromModuleExportExpression, sanitizeNameForGraphQL } from '@graphql-mesh/utils';
 import { MeshStore, PredefinedProxyOptions } from '@graphql-mesh/store';
+import { env } from 'process';
 
 const SCALARS = {
   bigint: 'BigInt',
@@ -157,7 +158,14 @@ export default class MySQLHandler implements MeshHandler {
       ? typeof configPool === 'string'
         ? await loadFromModuleExportExpression(configPool, { cwd: this.baseDir })
         : configPool
-      : createPool(this.config);
+      : createPool({
+          supportBigNumbers: true,
+          bigNumberStrings: true,
+          dateStrings: true,
+          trace: !!env.DEBUG,
+          debug: !!env.DEBUG,
+          ...this.config,
+        });
 
     pool.on('connection', connection => {
       upgrade(connection);
