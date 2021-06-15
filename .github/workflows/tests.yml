@@ -130,3 +130,4 @@ jobs:
           CI: true
           NODE_TLS_REJECT_UNAUTHORIZED: 0
           GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LC_ALL: en-US
